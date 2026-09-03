@@ -46,10 +46,3 @@ Built as a hands-on project to learn workflow automation, AI agent design, and c
 
 <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/d284ec95-a382-4a27-8295-742958b0e9f1" />
 
-
-## Author
-
-Built by Zohra Amna — Software Engineering student, UET Lahore
-```
-
-Bas `screenshot.png` ki jagah apna actual screenshot file name daal dena jab upload karo. Ready hai copy-paste ke liye!
