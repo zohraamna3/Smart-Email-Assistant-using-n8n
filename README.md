@@ -52,3 +52,7 @@ When a new email arrives in Gmail, this workflow:
         ├── Complaint  ──► [ Gmail API: Create Draft ]
         ├── Urgent     ──► [ Gmail API: Create Draft ]
         └── Spam       ──► [ End / No Action ]
+
+
+
+![Smart Email Assistant n8n Workflow](./assets/workflow-canvas.png)
