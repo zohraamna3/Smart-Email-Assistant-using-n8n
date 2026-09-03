@@ -27,6 +27,7 @@ When a new email arrives in Gmail, this workflow:
 * **Automation Engine:** [n8n](https://n8n.io) (Self-hosted / Free community version)
 * **AI Model:** [Google Gemini API](https://ai.google.dev/) (Free-tier LLM for classification & generation)
 * **Email Service:** Gmail API (OAuth 2.0 integration for reading, sending, and drafting)
+<img width="1366" height="768" alt="workflow-canvas" src="https://github.com/user-attachments/assets/e5c8ddaf-5f44-4430-8a81-8cdfd5417427" />
 
 ---
 
@@ -55,5 +56,5 @@ When a new email arrives in Gmail, this workflow:
 
 
 
-<img width="1366" height="768" alt="workflow-canvas" src="https://github.com/user-attachments/assets/06bce3aa-50ff-48be-9e8a-10fc9dbb6224" />
+
 
