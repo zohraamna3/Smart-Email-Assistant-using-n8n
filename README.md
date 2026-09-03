@@ -55,4 +55,5 @@ When a new email arrives in Gmail, this workflow:
 
 
 
-![Smart Email Assistant n8n Workflow](./assets/workflow-canvas.png)
+<img width="1366" height="768" alt="workflow-canvas" src="https://github.com/user-attachments/assets/06bce3aa-50ff-48be-9e8a-10fc9dbb6224" />
+
