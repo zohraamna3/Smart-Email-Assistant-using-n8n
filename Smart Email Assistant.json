@@ -1,0 +1,512 @@
+{
+  "name": "Smart Email Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -784,
+        -16
+      ],
+      "id": "0e4d0371-acee-4182-bbbb-e173a416c9e9",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Q170lth5q2E1UJnW",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ye email padho aur is exact category me classify karo: Urgent, Query, Complaint, ya Spam.\nSirf category ka naam return karo, kuch aur nahi.\n\nSubject: {{ $json.subject }}\nEmail Body: {{ $json.snippet }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -544,
+        -16
+      ],
+      "id": "29eecb47-b208-4fbc-b507-b90d0bdcdfbd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -608,
+        160
+      ],
+      "id": "ae8f76d0-9687-4a7c-9704-c4a4abee60d1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qihck5oyqD8y0IoW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Urgent",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "13faf683-e8c1-4961-b837-2d9edfb7ccbf"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8fae03a3-de36-4401-97f0-1160e4d25eee",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Query",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8bf1ca7b-cc18-44e6-99d1-8b4ff04bfde7",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Complaint",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3716a2d7-90fa-4d84-be5f-2b5c8b772cef",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Spam",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -208,
+        -48
+      ],
+      "id": "287716f7-2984-42cc-8dc8-f5b5ec3c11ba",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ye email ka professional aur friendly reply likho, sirf 2-3 lines me.\nSirf reply likho, kuch aur mat likhna (na subject, na greeting extra).\n\nOriginal Email Subject: {{ $('Gmail Trigger').item.json.subject }}\nOriginal Email Body: {{ $('Gmail Trigger').item.json.snippet }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        144,
+        -48
+      ],
+      "id": "8f365371-75b8-4073-9fa2-d8aa96172300",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        64
+      ],
+      "id": "d3d57bf6-a96e-4f4e-a96c-cac93aa4f784",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qihck5oyqD8y0IoW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        -144
+      ],
+      "id": "19c4ebf5-26de-4a1d-989c-cf82eafdcfcd",
+      "name": "Reply to a message",
+      "webhookId": "da4b59ec-3898-4ac1-b43d-2ad003d2c781",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Q170lth5q2E1UJnW",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ye complaint email ka empathetic aur professional reply likho, 2-3 lines me.\nMaafi maango aur assurance do ke jald solution milega.\n\nAgar customer ka naam pata na ho to greeting \"Dear Customer,\" se shuru karna.\nKabhi bhi [Customer Name] jaisa koi placeholder bracket [ ] mat likhna.\nSirf reply likho, kuch aur mat likhna (na subject line, na extra notes).\n\nSubject: {{ $('Gmail Trigger').item.json.subject }}\nBody: {{ $('Gmail Trigger').item.json.snippet }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        144,
+        80
+      ],
+      "id": "58746ee1-2fab-463f-9601-256e9c38e6ae",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        224
+      ],
+      "id": "233aceeb-e677-41f5-844f-360f4d32f0c6",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qihck5oyqD8y0IoW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Re: {{ $('Gmail Trigger').item.json.subject }}",
+        "message": "={{ $json.text }}",
+        "options": {
+          "threadId": "={{ $('Gmail Trigger').item.json.threadId }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        240
+      ],
+      "id": "c310826e-c04f-4d7b-8c70-3ccc0d0b71df",
+      "name": "Create a draft",
+      "webhookId": "cc79f464-4bda-4970-84c4-cfdeaf891cd4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Q170lth5q2E1UJnW",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ye urgent email ka turant, direct aur reassuring reply likho jo confirm kare ke iska jald follow-up hoga.\nSirf reply likho, kuch aur mat likhna.\n\nSubject: {{ $('Gmail Trigger').item.json.subject }}\nBody: {{ $('Gmail Trigger').item.json.snippet }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -16,
+        -288
+      ],
+      "id": "3c252be7-c043-4b4c-a37f-a227d40e1c3c",
+      "name": "Basic LLM Chain2"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        -144
+      ],
+      "id": "8cd73496-4a1f-4201-9550-425772e69a45",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qihck5oyqD8y0IoW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Re: {{ $('Gmail Trigger').item.json.subject }}",
+        "message": "={{ $json.text }}",
+        "options": {
+          "threadId": "={{ $('Gmail Trigger').item.json.threadId }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        -256
+      ],
+      "id": "234b4200-fb2d-4a60-813e-1423d54f3498",
+      "name": "Create a draft1",
+      "webhookId": "a3623adc-962f-469c-943a-9cf344268628",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Q170lth5q2E1UJnW",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        176
+      ],
+      "id": "544b1632-998f-4b87-b8b8-73ddf1d3dd60",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain2": {
+      "main": [
+        [
+          {
+            "node": "Create a draft1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b4a55a02-c809-4ae7-b3f6-7e3fa75eda7f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5aab71d474f5a94997f486e1b98ece4390f2e801b69b0b255c2ee577e72508cd"
+  },
+  "nodeGroups": [],
+  "id": "t13hhoEHQt9zL8B8",
+  "tags": []
+}
